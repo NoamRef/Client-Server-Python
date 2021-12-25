@@ -30,6 +30,12 @@ def main():
     print("Server started, listening in IP address " + myIp)
     while True:
         BrodcastThread = Thread(UDPBroadcast())
+        BrodcastThread.start()
+        TCPThread = Thread(TcpWelcoming(TCPserver))
+        TCPThread.start()
+        BrodcastThread.join()
+        TCPThread.join() # we found 2 players
+        game()
 
 def UDPBroadcast():
     UDPserver = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP) # udp socket
@@ -41,6 +47,13 @@ def UDPBroadcast():
         print("broadcast sent!")
         time.sleep(1)
 
-    def TcpWelcoming(TcpSocket):
-        
+def TcpWelcoming(TcpSocket):
+    global connected_clients # allows to edit global vars
+    while len(connected_clients) != 2: # mroe clinents need to connect
+        socket, addr = TcpSocket.accept() # waits
+        connected_clients.append((socket, addr))
+
+def game():
+    
+
 main()
