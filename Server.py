@@ -1,24 +1,46 @@
 from scapy.all import *
 from struct import *
-import socket
+from socket import *
+from select import select
+from threading import Thread
 import time
 
-tcpPort = 3200
-enthrent = "eth1" # to chagne to eht2 in testing
+#colors for fun
+RED = '\033[91m'
+BOLD = '\033[1m'
 
-myIp = get_if_addr(enthrent) # get my cp is
-server = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP) # udp socket
-server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1) # enables more clients
-server.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1) # enable bordcast
-message = pack('I',0xabcddcba) + pack('b',0x02) + pack('h',tcpPort)
-print(message)
-'''
-print("Server started, listening in IP address " + myIp)
-while True:
-    server.sendto(message, ('<broadcast>', 13118)) ## udp port 13117
-    print("message sent!")
-    time.sleep(1)
-'''
+#consts
+TIME_OUT = 10
+BUFFER_SIZE = 1024
+MSG_TYPE = 0x2
+COOKIE = 0xabcddcba
+TCP_PORT = 3200
+UDP_PORT = 13118
+ETHERNET = "eth1" # to chagne to eht2 in testing
 
-def handler(c):
-    return
+connected_clients = []
+
+def main():
+    myIp = get_if_addr(ETHERNET) # get my cp IP
+    TCPserver = socket(AF_INET, SOCK_STREAM) # start tcp serer
+    TCPserver.bind(('', TCP_PORT))
+    TCPserver.listen(2) # waits for maximum 2 clients
+    print(BOLD+"Server started, listening in IP address " + myIp)
+
+    print("Server started, listening in IP address " + myIp)
+    while True:
+        BrodcastThread = Thread(UDPBroadcast())
+
+def UDPBroadcast():
+    UDPserver = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP) # udp socket
+    UDPserver.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1) # enables more clients
+    UDPserver.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1) # enable broadcast
+    message = pack('LBH',COOKIE,MSG_TYPE,TCP_PORT)
+    while(len(connected_clients)) != 2:
+        UDPserver.sendto(message, ('<broadcast>', UDP_PORT)) # udp port 13117
+        print("broadcast sent!")
+        time.sleep(1)
+
+    def TcpWelcoming(TcpSocket):
+        
+main()
