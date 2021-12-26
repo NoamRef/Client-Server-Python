@@ -6,11 +6,12 @@ from select import select
 
 #Consts
 TIME_OUT = 10
-UDP_PORT = 13118
+UDP_PORT = 13118 # change to 13117
 BUFFER_SIZE = 1024
 COOKIE = 0xabcddcba
 MSG_TYPE = 0x2
 TEAM_NAME = "Dothraki"
+
 
 #colors for fun
 BOLD = '\033[1m'
@@ -40,6 +41,7 @@ def mainF():
             msg = TCPclient.recv(BUFFER_SIZE).decode() # get message from server + question
             print(msg)
             game(TCPclient)
+            print(RED + "Server disconnected, listening for offer requests..." + RESET)
 
         except error:
             print(RED+"socket error, searching for another connection\n\n"+RESET)

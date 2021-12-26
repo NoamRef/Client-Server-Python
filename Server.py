@@ -43,6 +43,7 @@ def mainF():
         TCPThread.join() # we found 2 players
         print(BLUE+"Found 2 clients, Game is about to begin"+RESET)
         game()
+        print(RED + "Game over, sending out offer requests..." + RESET)
 
 def UDPBroadcast():
     UDPserver = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP) # udp socket
@@ -91,7 +92,7 @@ def game():
                 winnerTeam = teamToAnswer
             else:
                 winnerTeam = teamTolose
-        message_to_send2 = RED +"\nGame over!" + RESET +"\nThe correct answer was " + BOLD + str(a) + mssg + RESET + "\nCongratulations to the winner: \n" + winnerTeam + "\n"
+        message_to_send2 = RED +"\nGame over!" + RESET +"\nThe correct answer was " + BOLD + str(a) + mssg + RESET+ "\nCongratulations to the winner: \n" + winnerTeam + "\n"
         socket1.send(message_to_send2.encode())
         socket2.send(message_to_send2.encode())
         socket1.close()

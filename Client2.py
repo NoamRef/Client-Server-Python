@@ -6,7 +6,7 @@ from select import select
 
 #Consts
 TIME_OUT = 10
-UDP_PORT = 13118
+UDP_PORT = 13118 # change to 13117
 BUFFER_SIZE = 1024
 COOKIE = 0xabcddcba
 MSG_TYPE = 0x2
@@ -26,7 +26,7 @@ def mainF():
     UDPclient.setsockopt(SOL_SOCKET, SO_BROADCAST, 1)
     UDPclient.bind(("", UDP_PORT))
     while True: # serching for connections
-        print(BLUE+"Client started, listening for offer requests..."+RESET)
+        print(BLUE+"\nClient started, listening for offer requests...\n"+RESET)
         data, addr = UDPclient.recvfrom(BUFFER_SIZE)
         try:
             cookie, msg_type, tcp_port = unpack('LBH',data)
@@ -40,12 +40,13 @@ def mainF():
             msg = TCPclient.recv(BUFFER_SIZE).decode() # get message from server + question
             print(msg)
             game(TCPclient)
+            print(RED + "Server disconnected, listening for offer requests..." + RESET)
 
         except error:
             print(RED+"socket error, searching for another connection\n\n"+RESET)
 
         except:
-            print("Message is not supported ! ")
+            print(RED+"Message is not supported ! "+RESET)
 
 
 
@@ -60,8 +61,7 @@ def game(TCPsocket):
         print(response)
     except:
         TCPsocket.close()
-        print(RED+"Something went wrong in the answerQuestion method")
-        print("Disconnected"+RESET)
+        print(RED+"Something went wrong in the answerQuestion method"+RESET)
 
 if __name__ == "__main__":
     mainF()
