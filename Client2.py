@@ -10,7 +10,7 @@ UDP_PORT = 13118
 BUFFER_SIZE = 1024
 COOKIE = 0xabcddcba
 MSG_TYPE = 0x2
-TEAM_NAME = "Dothraki"
+TEAM_NAME = "King's Landing"
 
 #colors for fun
 BOLD = '\033[1m'
