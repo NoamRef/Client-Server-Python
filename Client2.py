@@ -54,9 +54,9 @@ def game(TCPsocket):
         # Means we got input from stdin, we should write it to the socket
             answer = sys.stdin.readline().encode()
             TCPsocket.send(answer) # sends answer
-        if(TCPsocket in reads):
-        # Means we got data from the socket, we should write it to stdout
-            response = TCPsocket.recv(BUFFER_SIZE).decode()
+            print("asnwer sent")
+            response = TCPsocket.recv(BUFFER_SIZE).decode() # get final message from the server
+            print("got response")
             print(response)
     except:
         TCPsocket.close()

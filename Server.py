@@ -18,7 +18,7 @@ TIME_OUT = 10
 BUFFER_SIZE = 1024
 MSG_TYPE = 0x2
 COOKIE = 0xabcddcba
-TCP_PORT = 3200
+TCP_PORT = randint(1500,55000)
 UDP_PORT = 13118
 ETHERNET = "eth1" # to chagne to eht2 in testing
 
@@ -32,12 +32,13 @@ def mainF():
     print(BOLD+RED+"Server started, listening in IP address " + myIp)
 
     while True:
-        BrodcastThread = Thread(UDPBroadcast())
+        BrodcastThread = Thread(target = UDPBroadcast)
         BrodcastThread.start()
-        TCPThread = Thread(TcpWelcoming(TCPserver))
+        TCPThread = Thread(target = TcpWelcoming,args=(TCPserver,))
         TCPThread.start()
         BrodcastThread.join()
         TCPThread.join() # we found 2 players
+        print("found 2 clients")
         game()
 
 def UDPBroadcast():
@@ -45,14 +46,13 @@ def UDPBroadcast():
     UDPserver.setsockopt(SOL_SOCKET, SO_REUSEPORT, 1) # enables more clients
     UDPserver.setsockopt(SOL_SOCKET, SO_BROADCAST, 1) # enable broadcast
     message = pack('LBH',COOKIE,MSG_TYPE,TCP_PORT)
-    while(len(connected_clients)) != 2:
+    while(len(connected_clients) < 2):
         UDPserver.sendto(message, ('<broadcast>', UDP_PORT)) # udp port 13117
-        print(HEADER+"broadcast sent!")
         time.sleep(1)
 
 def TcpWelcoming(TcpSocket):
     global connected_clients # allows to edit global vars
-    while len(connected_clients) != 2: # mroe clinents need to connect
+    while (len(connected_clients) < 2): # mroe clinents need to connect
         socket, addr = TcpSocket.accept() # waits
         connected_clients.append((socket, addr))
 
@@ -64,17 +64,19 @@ def game():
         team1 = socket1.recv(BUFFER_SIZE).decode()
         team2 = socket2.recv(BUFFER_SIZE).decode()
         q, a , o = questionGenrator()
-        message_to_send = "Welcome to quck Maths.\n Player 1:" + team1 + "\nplayer 2: " + team2 + "\n==\nPleasea nswer the following question as fast as you can\nHow much is " +  str(q[0]) + o + str(q[1]) + "?"
-        time.sleep(TIME_OUT) # wait for start
+        message_to_send = "Welcome to quck Maths.\nPlayer 1: " + team1 + "\nplayer 2: " + team2 + "\n==\nPleasea answer the following question as fast as you can\nHow much is " +  str(q[0]) + o + str(q[1]) + "?"
+        time.sleep(1) # wait for start
         socket1.send(message_to_send.encode())
         socket2.send(message_to_send.encode())
         reads, out, e = select([socket1, socket2], [], [], TIME_OUT)
+        print("Reads passed")
         teamToAnswer = ""
         teamTolose = ""
         answer = -1
         mssg = ""
         winnerTeam = ""
-        if(sys.stdin in reads): # timout didn't accure
+        if(len(reads) > 0): # timout didn't accure
+            print("Got message")
             if([reads[0] == socket1]):
                 teamToAnswer = team1
                 teamTolose = team2
@@ -83,12 +85,12 @@ def game():
                 teamToAnswer = team2
                 teamTolose = team1
                 answer = socket2.recv(BUFFER_SIZE).decode()[:-1]
-            mssg = "!\nThe Team to answer was " + teamToAnswer+ "with the asnwer: " + answer
+            mssg = "!\nThe Team to answer was " + teamToAnswer+ "with the answer: " + answer
             if (str(a) == answer):
                 winnerTeam = teamToAnswer
             else:
                 winnerTeam = teamTolose
-        message_to_send2 = "Game over!\nThe correct answer was " + a + mssg + "\n\nCongratulations to the winner: " + winnerTeam
+        message_to_send2 = "Game over!\nThe correct answer was " + str(a) + mssg + "\n\nCongratulations to the winner: " + winnerTeam
         socket1.send(message_to_send2.encode())
         socket2.send(message_to_send2.encode())
         socket1.close()
@@ -118,7 +120,7 @@ def questionGenrator():
             number2 = randint(number1-9,number1)
         a = number1-number2
     q = (number1,number2)
-    return(q,o,a) # question,operation,answer
+    return(q,a,o) # question,operation,answer
 
 if __name__ == "__main__":
     mainF()
