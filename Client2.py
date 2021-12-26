@@ -15,7 +15,9 @@ TEAM_NAME = "King's Landing"
 #colors for fun
 BOLD = '\033[1m'
 RED = '\033[91m'
-HEADER = '\033[95m'
+PURPLE = '\033[95m'
+BLUE = '\033[94m'
+RESET = "\x1b[0m"
 
 
 def mainF():
@@ -24,13 +26,13 @@ def mainF():
     UDPclient.setsockopt(SOL_SOCKET, SO_BROADCAST, 1)
     UDPclient.bind(("", UDP_PORT))
     while True: # serching for connections
-        print("Client started, listening for offer requests...")
+        print(BLUE+"Client started, listening for offer requests..."+RESET)
         data, addr = UDPclient.recvfrom(BUFFER_SIZE)
         try:
             cookie, msg_type, tcp_port = unpack('LBH',data)
             if(cookie != COOKIE or msg_type != MSG_TYPE):
                 raise "m"
-            print(BOLD+"Received offer from {0}, attempting to connect...".format(addr[0]))
+            print(BOLD+"Received offer from {0}, attempting to connect...".format(addr[0])+RESET)
             TCPclient = socket(AF_INET, SOCK_STREAM) # create tcp socket
             toConnectTo = (addr[0],tcp_port)
             TCPclient.connect(toConnectTo)
@@ -40,7 +42,7 @@ def mainF():
             game(TCPclient)
 
         except error:
-            print(RED+"socket error, searching for another connection\n\n"+HEADER)
+            print(RED+"socket error, searching for another connection\n\n"+RESET)
 
         except:
             print("Message is not supported ! ")
@@ -52,15 +54,14 @@ def game(TCPsocket):
         reads, out, e = select([sys.stdin, TCPsocket], [], [], TIME_OUT) # waits timeout time for input from the client
         if(sys.stdin in reads):
         # Means we got input from stdin, we should write it to the socket
-            answer = sys.stdin.readline().encode()
+            answer = sys.stdin.readline()[0].encode()
             TCPsocket.send(answer) # sends answer
-            print("asnwer sent")
-            response = TCPsocket.recv(BUFFER_SIZE).decode() # get final message from the server
-            print("got response")
-            print(response)
+        response = TCPsocket.recv(BUFFER_SIZE).decode() # get final message from the server
+        print(response)
     except:
         TCPsocket.close()
         print(RED+"Something went wrong in the answerQuestion method")
+        print("Disconnected"+RESET)
 
 if __name__ == "__main__":
     mainF()

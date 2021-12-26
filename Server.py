@@ -8,10 +8,13 @@ import time
 from random import random, randint
 
 #colors for fun
-RED = '\033[91m'
 BOLD = '\033[1m'
-HEADER = '\033[95m'
-RESET = 'u001b[0m'
+RED = '\033[91m'
+PURPLE = '\033[95m'
+BLUE = '\033[94m'
+RESET = "\x1b[0m"
+GREEN = '\033[92m'
+UNDERLINE = '\033[4m'
 
 #consts
 TIME_OUT = 10
@@ -29,7 +32,7 @@ def mainF():
     TCPserver = socket(AF_INET, SOCK_STREAM) # start tcp serer
     TCPserver.bind(('', TCP_PORT))
     TCPserver.listen(2) # waits for maximum 2 clients
-    print(BOLD+RED+"Server started, listening in IP address " + myIp)
+    print(BOLD+BLUE+"Server started, listening in IP address " + myIp + RESET)
 
     while True:
         BrodcastThread = Thread(target = UDPBroadcast)
@@ -38,7 +41,7 @@ def mainF():
         TCPThread.start()
         BrodcastThread.join()
         TCPThread.join() # we found 2 players
-        print("found 2 clients")
+        print(BLUE+"Found 2 clients, Game is about to begin"+RESET)
         game()
 
 def UDPBroadcast():
@@ -61,36 +64,34 @@ def game():
     socket1 = connected_clients[0][0]
     socket2 = connected_clients[1][0]
     try:
-        team1 = socket1.recv(BUFFER_SIZE).decode()
-        team2 = socket2.recv(BUFFER_SIZE).decode()
+        team1 = PURPLE + socket1.recv(BUFFER_SIZE).decode() + RESET
+        team2 = GREEN + socket2.recv(BUFFER_SIZE).decode() + RESET
         q, a , o = questionGenrator()
-        message_to_send = "Welcome to quck Maths.\nPlayer 1: " + team1 + "\nplayer 2: " + team2 + "\n==\nPleasea answer the following question as fast as you can\nHow much is " +  str(q[0]) + o + str(q[1]) + "?"
+        message_to_send = UNDERLINE+"Welcome to quck Maths."+ RESET+"\nPlayer 1: "+ team1 + "\nplayer 2: " + team2 +"\n==\nPlease answer the following question as fast as you can\n" + BOLD + BLUE + "How much is " +  str(q[0]) + o + str(q[1]) + RESET + "?"
         time.sleep(1) # wait for start
         socket1.send(message_to_send.encode())
         socket2.send(message_to_send.encode())
         reads, out, e = select([socket1, socket2], [], [], TIME_OUT)
-        print("Reads passed")
         teamToAnswer = ""
         teamTolose = ""
         answer = -1
         mssg = ""
         winnerTeam = ""
         if(len(reads) > 0): # timout didn't accure
-            print("Got message")
-            if([reads[0] == socket1]):
+            if(reads[0] == socket1):
                 teamToAnswer = team1
                 teamTolose = team2
-                answer = socket1.recv(BUFFER_SIZE).decode()[:-1]
-            elif([reads[0] == socket2]):
+                answer = socket1.recv(BUFFER_SIZE).decode()
+            if(reads[0] == socket2):
                 teamToAnswer = team2
                 teamTolose = team1
-                answer = socket2.recv(BUFFER_SIZE).decode()[:-1]
-            mssg = "!\nThe Team to answer was " + teamToAnswer+ "with the answer: " + answer
+            mssg = "!\nThe Team to answer was " + teamToAnswer+ " with the answer: " + answer
+            answer = answer[0]
             if (str(a) == answer):
                 winnerTeam = teamToAnswer
             else:
                 winnerTeam = teamTolose
-        message_to_send2 = "Game over!\nThe correct answer was " + str(a) + mssg + "\n\nCongratulations to the winner: " + winnerTeam
+        message_to_send2 = RED +"\nGame over!" + RESET +"\nThe correct answer was " + BOLD + str(a) + mssg + RESET + "\nCongratulations to the winner: \n" + winnerTeam + "\n"
         socket1.send(message_to_send2.encode())
         socket2.send(message_to_send2.encode())
         socket1.close()
@@ -99,7 +100,7 @@ def game():
     except:
         socket1.close()
         socket2.close()
-        print ("Problem with connection")
+        print (RED + "Problem with connection" + RESET)
         connected_clients = []
 
 
