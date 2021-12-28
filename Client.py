@@ -1,12 +1,13 @@
 import socket
 import sys
+import getch
 from struct import *
 from socket import *
 from select import select
 
 #Consts
 TIME_OUT = 10
-UDP_PORT = 13118 # change to 13117
+UDP_PORT = 13117 # change to 13117
 BUFFER_SIZE = 1024
 COOKIE = 0xabcddcba
 MSG_TYPE = 0x2
@@ -19,23 +20,6 @@ RED = '\033[91m'
 PURPLE = '\033[95m'
 BLUE = '\033[94m'
 RESET = "\x1b[0m"
-
-class _Getch:
-    """Gets a single character from standard input.  Does not echo to the screen."""
-    def __init__(self):
-        try:
-            self.impl = _GetchWindows()
-        except ImportError:
-            self.impl = _GetchUnix()
-
-    def __call__(self): return self.impl()
-
-def cbreak(stream):
-    """Set fd mode to cbreak"""
-    old_settings = termios.tcgetattr(stream)
-    tty.setcbreak(stream.fileno())
-    yield
-    termios.tcsetattr(stream, termios.TCSADRAIN, old_settings)
 
 
 def mainF():
