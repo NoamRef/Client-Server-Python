@@ -22,7 +22,7 @@ BUFFER_SIZE = 1024
 MSG_TYPE = 0x2
 COOKIE = 0xabcddcba
 TCP_PORT = randint(1500,55000)
-UDP_PORT = 13118
+UDP_PORT = 13118 # change to 13117
 ETHERNET = "eth1" # to chagne to eht2 in testing
 
 connected_clients = []
