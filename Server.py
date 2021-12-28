@@ -69,7 +69,7 @@ def game():
         team2 = GREEN + socket2.recv(BUFFER_SIZE).decode() + RESET
         q, a , o = questionGenrator()
         message_to_send = UNDERLINE+"Welcome to quck Maths."+ RESET+"\nPlayer 1: "+ team1 + "\nplayer 2: " + team2 +"\n==\nPlease answer the following question as fast as you can\n" + BOLD + BLUE + "How much is " +  str(q[0]) + o + str(q[1]) + RESET + "?"
-        time.sleep(1) # wait for start
+        time.sleep(TIME_OUT) # wait for start
         socket1.send(message_to_send.encode())
         socket2.send(message_to_send.encode())
         reads, out, e = select([socket1, socket2], [], [], TIME_OUT)
