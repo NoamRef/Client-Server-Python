@@ -12,7 +12,7 @@ UDP_PORT = 13117 # change to 13117
 BUFFER_SIZE = 1024
 COOKIE = 0xabcddcba
 MSG_TYPE = 0x2
-TEAM_NAME = "King's Landing"
+TEAM_NAME = "Kings's Landing"
 ETHERNET = "eth2" # to chagne to eht2 in testing
 
 
