@@ -22,7 +22,7 @@ BUFFER_SIZE = 1024
 MSG_TYPE = 0x2
 COOKIE = 0xabcddcba
 TCP_PORT = randint(1500,55000)
-UDP_PORT = 13200 # change to 13117
+UDP_PORT = 13118 # change to 13117
 ETHERNET = "eth1" # to chagne to eht2 in testing
 
 connected_clients = []
@@ -50,6 +50,7 @@ def UDPBroadcast():
     UDPserver.setsockopt(SOL_SOCKET, SO_REUSEPORT, 1) # enables more clients
     UDPserver.setsockopt(SOL_SOCKET, SO_BROADCAST, 1) # enable broadcast
     message = pack('LBH',COOKIE,MSG_TYPE,TCP_PORT)
+    sys.getsizeof(message)
     while(len(connected_clients) < 2):
         UDPserver.sendto(message, ('<broadcast>', UDP_PORT)) # udp port 13117
         time.sleep(1)
@@ -86,6 +87,7 @@ def game():
             if(reads[0] == socket2):
                 teamToAnswer = team2
                 teamTolose = team1
+                answer = socket2.recv(BUFFER_SIZE).decode()
             mssg = "!\nThe Team to answer was " + teamToAnswer+ " with the answer: " + answer
             answer = answer[0]
             if (str(a) == answer):
@@ -98,10 +100,11 @@ def game():
         socket1.close()
         socket2.close()
         connected_clients = []
-    except:
+    except Exception as e:
+        print(e)
         socket1.close()
         socket2.close()
-        print (RED + "Problem with connection" + RESET)
+        print (RED + BOLD + "Problem with connection" + RESET)
         connected_clients = []
 
 

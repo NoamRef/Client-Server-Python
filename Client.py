@@ -7,7 +7,7 @@ from select import select
 
 #Consts
 TIME_OUT = 10
-UDP_PORT = 13200 # change to 13117
+UDP_PORT = 13118 # change to 13117
 BUFFER_SIZE = 1024
 COOKIE = 0xabcddcba
 MSG_TYPE = 0x2
@@ -47,9 +47,8 @@ def mainF():
         except error:
             print(RED+"socket error, searching for another connection\n\n"+RESET)
 
-        except Exception as e:
-            print("fdf")
-            print(e)
+        except:
+            print(BOLD+"Received offer from {0}".format(addr[0])+RESET)
             print(RED+"Message is not supported ! "+RESET)
 
 
@@ -63,7 +62,8 @@ def game(TCPsocket):
             TCPsocket.send(answer) # sends answer
         response = TCPsocket.recv(BUFFER_SIZE).decode() # get final message from the server
         print(response)
-    except:
+    except Exception as e:
+        print(e)
         TCPsocket.close()
         print(RED+"Something went wrong in the answerQuestion method"+RESET)
 
