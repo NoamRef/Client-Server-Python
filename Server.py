@@ -22,15 +22,15 @@ BUFFER_SIZE = 1024
 MSG_TYPE = 0x2
 COOKIE = 0xabcddcba
 TCP_PORT = randint(1500,55000)
-UDP_PORT = 13118 # change to 13117
-ETHERNET = "eth1" # to chagne to eht2 in testing
+UDP_PORT = 13117 # change to 13117
+ETHERNET = "eth2" # to chagne to eht2 in testing
 
 connected_clients = []
 
 def mainF():
     myIp = get_if_addr(ETHERNET) # get my cp IP
     TCPserver = socket(AF_INET, SOCK_STREAM) # start tcp serer
-    TCPserver.bind(('', TCP_PORT))
+    TCPserver.bind((myIp, TCP_PORT))
     TCPserver.listen(2) # waits for maximum 2 clients
     print(BOLD+BLUE+"Server started, listening in IP address " + myIp + RESET)
 
@@ -50,9 +50,13 @@ def UDPBroadcast():
     UDPserver.setsockopt(SOL_SOCKET, SO_REUSEPORT, 1) # enables more clients
     UDPserver.setsockopt(SOL_SOCKET, SO_BROADCAST, 1) # enable broadcast
     message = pack('LBH',COOKIE,MSG_TYPE,TCP_PORT)
-    sys.getsizeof(message)
+    myIp = get_if_addr(ETHERNET)[:-2]
     while(len(connected_clients) < 2):
-        UDPserver.sendto(message, ('<broadcast>', UDP_PORT)) # udp port 13117
+        ip = str(myIp)
+        for i in range(0,255): # brodcast
+            ip = ip + str(i)
+            UDPserver.sendto(message, (ip, UDP_PORT))
+            ip = str(myIp)
         time.sleep(1)
 
 def TcpWelcoming(TcpSocket):
