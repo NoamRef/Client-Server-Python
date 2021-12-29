@@ -1,16 +1,18 @@
 import socket
 import sys
+import getch
 from struct import *
 from socket import *
 from select import select
 
 #Consts
 TIME_OUT = 10
-UDP_PORT = 13117 # change to 13117
+UDP_PORT = 13200 # change to 13117
 BUFFER_SIZE = 1024
 COOKIE = 0xabcddcba
 MSG_TYPE = 0x2
 TEAM_NAME = "King's Landing"
+
 
 #colors for fun
 BOLD = '\033[1m'

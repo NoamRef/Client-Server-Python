@@ -7,7 +7,7 @@ from select import select
 
 #Consts
 TIME_OUT = 10
-UDP_PORT = 13117 # change to 13117
+UDP_PORT = 13200 # change to 13117
 BUFFER_SIZE = 1024
 COOKIE = 0xabcddcba
 MSG_TYPE = 0x2
@@ -47,7 +47,9 @@ def mainF():
         except error:
             print(RED+"socket error, searching for another connection\n\n"+RESET)
 
-        except:
+        except Exception as e:
+            print("fdf")
+            print(e)
             print(RED+"Message is not supported ! "+RESET)
 
 
