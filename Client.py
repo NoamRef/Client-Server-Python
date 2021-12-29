@@ -1,6 +1,7 @@
 import socket
 import sys
 import getch
+from scapy.all import *
 from struct import *
 from socket import *
 from select import select
@@ -12,6 +13,7 @@ BUFFER_SIZE = 1024
 COOKIE = 0xabcddcba
 MSG_TYPE = 0x2
 TEAM_NAME = "Dothraki"
+ETHERNET = "eth2" # to chagne to eht2 in testing
 
 
 #colors for fun
@@ -23,10 +25,11 @@ RESET = "\x1b[0m"
 
 
 def mainF():
+    myIp = get_if_addr(ETHERNET)
     UDPclient = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP) # UDP
     UDPclient.setsockopt(SOL_SOCKET, SO_REUSEPORT, 1)
     UDPclient.setsockopt(SOL_SOCKET, SO_BROADCAST, 1)
-    UDPclient.bind(("", UDP_PORT))
+    UDPclient.bind((myIp, UDP_PORT))
     while True: # serching for connections
         print(BLUE+"\nClient started, listening for offer requests...\n"+RESET)
         data, addr = UDPclient.recvfrom(BUFFER_SIZE)
@@ -45,6 +48,7 @@ def mainF():
             print(RED + "Server disconnected, listening for offer requests..." + RESET)
 
         except error:
+            print(error)
             print(RED+"socket error, searching for another connection\n\n"+RESET)
 
         except:
@@ -62,8 +66,7 @@ def game(TCPsocket):
             TCPsocket.send(answer) # sends answer
         response = TCPsocket.recv(BUFFER_SIZE).decode() # get final message from the server
         print(response)
-    except Exception as e:
-        print(e)
+    except:
         TCPsocket.close()
         print(RED+"Something went wrong in the answerQuestion method"+RESET)
 
